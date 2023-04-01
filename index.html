@@ -1,0 +1,28 @@
+---
+layout: default
+title: Home
+---
+
+<div class="container">
+	<p class="post-hero center-text spacing"> Repositório de episódios transcritos do Podcast 45 Graus.</p>
+	<p> As conversas são processadas automaticamente através de inteligência artificial, pelo que poderá haver erros na transcrição assim como na classificação do interlocutor. </p>
+	<form action="/search.html" method="get">
+		<label for="search_box">Search</label>
+		<input type="text" id="search_box" name="query">
+		<input type="submit" value="search">
+	</form>
+
+</div>
+
+<div class="blog-posts">
+	{% for post in site.posts %}
+		<div class="blog-post spacing">
+			<h4><a href="{{ post.url }}">{{ post.title }}</a></h4>
+			<p class="summary">
+				<span class="date">
+					{{ post.date | date: '%B %d, %Y' }}
+				</span>
+			</p>
+		</div>
+	{% endfor %}
+</div>
