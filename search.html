@@ -95,7 +95,24 @@ layout: search
       });
     }*/
 
-    var results = idx.search(searchTerm); // Get lunr to perform a search
+    // Modify the search term to handle multi-word phrases
+    // If there are multiple words, wrap them in quotes to search as a phrase
+    var modifiedSearchTerm = searchTerm;
+    if (searchTerm.includes(' ')) {
+      // Check if it's already a quoted phrase
+      if (!(searchTerm.startsWith('"') && searchTerm.endsWith('"'))) {
+        modifiedSearchTerm = '"' + searchTerm + '"';
+      }
+    }
+
+    var results = idx.search(modifiedSearchTerm); // Get lunr to perform a search
+    
+    // If no results found with the phrase search, fall back to the original term
+    // This provides a better user experience when exact phrases don't match
+    if (results.length === 0 && modifiedSearchTerm !== searchTerm) {
+      results = idx.search(searchTerm);
+    }
+    
     displaySearchResults(results, window.store); // We'll write this in the next section
   }
 
