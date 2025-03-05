@@ -95,21 +95,26 @@ layout: search
       });
     }*/
 
-    // Modify the search term to handle multi-word phrases
-    // If there are multiple words, wrap them in quotes to search as a phrase
-    var modifiedSearchTerm = searchTerm;
-    if (searchTerm.includes(' ')) {
-      // Check if it's already a quoted phrase
-      if (!(searchTerm.startsWith('"') && searchTerm.endsWith('"'))) {
-        modifiedSearchTerm = '"' + searchTerm + '"';
-      }
-    }
-
-    var results = idx.search(modifiedSearchTerm); // Get lunr to perform a search
+    // Process search term to handle multi-word searches
+    var searchTerms = searchTerm.trim().split(/\s+/);
+    var searchQuery = '';
     
-    // If no results found with the phrase search, fall back to the original term
-    // This provides a better user experience when exact phrases don't match
-    if (results.length === 0 && modifiedSearchTerm !== searchTerm) {
+    if (searchTerms.length > 1) {
+      // For multi-word searches, require all terms to be present using + operator
+      // This ensures all words must be present in the results
+      searchQuery = searchTerms.map(function(term) {
+        return '+' + term;
+      }).join(' ');
+    } else {
+      // For single word searches, use the term as is
+      searchQuery = searchTerm;
+    }
+    
+    // Perform the search with our modified query
+    var results = idx.search(searchQuery);
+    
+    // If we got no results with the strict search, fall back to the original term
+    if (results.length === 0 && searchTerms.length > 1) {
       results = idx.search(searchTerm);
     }
     
